@@ -15,8 +15,8 @@ public class AddBooks extends HttpServlet {
     @Override
     public void init() throws ServletException {
         dbUrl = "jdbc:mysql://localhost:3306/library_db"; // database
-        dbUser = "root"; // MySQL username
-        dbPassword = "pass123"; // MySQL password
+        dbUser = "db user name"; // MySQL username
+        dbPassword = "db user password"; // MySQL password
     }
 
     @Override

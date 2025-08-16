@@ -1,0 +1,56 @@
+import java.io.*;
+import java.sql.*;
+import javax.servlet.*;
+import javax.servlet.annotation.*;
+import javax.servlet.http.*;
+
+@WebServlet("/AddBooks")
+public class AddBooks extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    private String dbUrl;
+    private String dbUser;
+    private String dbPassword;
+
+    @Override
+    public void init() throws ServletException {
+        dbUrl = "jdbc:mysql://localhost:3306/library_db"; // database
+        dbUser = "root"; // MySQL username
+        dbPassword = "pass123"; // MySQL password
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+
+        String title = req.getParameter("title");
+        String author = req.getParameter("author");
+        String category = req.getParameter("category");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+
+            
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO books (title, author, category) VALUES (?, ?, ?)"
+            );
+            ps.setString(1, title);
+            ps.setString(2, author);
+            ps.setString(3, category);
+
+            int result = ps.executeUpdate();
+
+            if (result > 0) {
+                out.println("<h3>Book Added Successfully!</h3>");
+            } else {
+                out.println("<h3>Failed to Add Book!</h3>");
+            }
+            con.close();
+        } catch (Exception e) {
+            out.println("<h3 style='color:red;'>Error: " + e.getMessage() + "</h3>");
+            e.printStackTrace();
+        }
+    }
+}

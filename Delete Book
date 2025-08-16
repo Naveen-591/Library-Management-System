@@ -1,0 +1,36 @@
+import java.io.*;
+import java.sql.*;
+import javax.servlet.*;
+import javax.servlet.annotation.*;
+import javax.servlet.http.*;
+
+@WebServlet("/DeleteBooks")
+public class DeleteBooks extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_db", "user db name", "user db password");
+
+            PreparedStatement ps = con.prepareStatement("DELETE FROM books WHERE id=?");
+            ps.setInt(1, id);
+
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                out.println("<h3>Book Deleted Successfully!</h3>");
+            } else {
+                out.println("<h3>No Book Found with Given ID.</h3>");
+            }
+
+            con.close();
+        } catch (Exception e) {
+            out.println("<h3>Error: " + e.getMessage() + "</h3>");
+        }
+    }
+}

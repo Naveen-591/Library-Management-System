@@ -1,0 +1,35 @@
+import java.io.*;
+import java.sql.*;
+import javax.servlet.*;
+import javax.servlet.annotation.*;
+import javax.servlet.http.*;
+
+@WebServlet("/ViewBooks")
+public class ViewBooks extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_db", "root", "pass123");
+
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM books");
+
+            out.println("<h2>Book List</h2>");
+            out.println("<table border='1'><tr><th>ID</th><th>Title</th><th>Author</th><th>Category</th></tr>");
+            while (rs.next()) {
+                out.println("<tr><td>" + rs.getInt("id") + "</td><td>" + rs.getString("title") 
+                            + "</td><td>" + rs.getString("author") + "</td><td>" + rs.getString("category") + "</td></tr>");
+            }
+            out.println("</table>");
+
+            con.close();
+        } catch (Exception e) {
+            out.println("<h3>Error: " + e.getMessage() + "</h3>");
+        }
+    }
+}
